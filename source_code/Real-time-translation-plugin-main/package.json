@@ -23,7 +23,11 @@
     "dev:gateway": "npm run dev -w @live-subtitles/gateway",
     "build:chrome": "npm run build -w @live-subtitles/extension",
     "build:safari-resources": "npm run build:safari -w @live-subtitles/extension",
-    "verify": "npm run typecheck && npm test && npm run build && npm run build:safari-resources"
+    "verify": "npm run typecheck && npm test && npm run build && npm run build:safari-resources",
+    "test:module1": "node tests/module1/run.mjs",
+    "test:module1:reproduce": "node tests/module1/reproduce.mjs",
+    "test:regression": "npm run typecheck && npm run typecheck:module1 && npm test && npm run test:module1 && npm run build && npm run build:safari-resources && npm run test:e2e -w @live-subtitles/extension",
+    "typecheck:module1": "tsc -p tests/module1/tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@types/node": "^24.10.0",

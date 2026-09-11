@@ -1,4 +1,4 @@
-import { encodeAudioFrame, makeHello, serverMessageSchema, type AudioFrame, type ExtensionSettings, type ServerMessage } from "@live-subtitles/shared";
+import { PCM_FORMAT, encodeAudioFrame, makeHello, serverMessageSchema, type AudioFrame, type ExtensionSettings, type ServerMessage } from "@live-subtitles/shared";
 
 type State = "idle" | "connecting" | "ready" | "reconnecting" | "closed";
 type Callbacks = {
@@ -54,7 +54,7 @@ export class RealtimeClient {
   private buffer(frame: AudioFrame): void {
     this.pending.push({ ...frame, pcm: frame.pcm.slice() });
     const newest = frame.audioEndMs;
-    while (this.pending.length && newest - (this.pending[0]?.audioEndMs ?? newest) > MAX_BUFFER_MS) {
+    while (this.pending.length && newest - (this.pending[0]?.audioEndMs ?? newest) + PCM_FORMAT.frameDurationMs > MAX_BUFFER_MS) {
       this.pending.shift();
       this.droppedAudio = true;
     }

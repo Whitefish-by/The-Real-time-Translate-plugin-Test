@@ -38,6 +38,8 @@ type SubtitleState = { final: SubtitleEvent | null; interim: SubtitleEvent | nul
 const emptySubtitleState = (): SubtitleState => ({ final: null, interim: null, revisions: {} });
 const MAX_TRACKED_REVISIONS = 128;
 function mergeSubtitle(state: SubtitleState, event: SubtitleEvent): SubtitleState {
+  // A final segment cannot become interim again within the same generation.
+  if (!event.isFinal && state.final?.segmentId === event.segmentId && state.final.generation === event.generation) return state;
   const eventKey = `${event.generation}:${event.segmentId}`;
   const previous = state.revisions[eventKey] ?? -1;
   if (event.revision <= previous) return state;

@@ -25,6 +25,8 @@ function withBoundedRevision(revisions: Record<string, number>, key: string, rev
 }
 
 export function mergeSubtitle(state: SubtitleState, event: SubtitleEvent): SubtitleState {
+  // A final segment cannot become interim again within the same generation.
+  if (!event.isFinal && state.final?.segmentId === event.segmentId && state.final.generation === event.generation) return state;
   const eventKey = `${event.generation}:${event.segmentId}`;
   const priorRevision = state.revisions[eventKey] ?? -1;
   if (event.revision <= priorRevision) return state;
