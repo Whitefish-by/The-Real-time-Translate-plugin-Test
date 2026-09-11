@@ -1,0 +1,11 @@
+node_modules/
+**/dist/
+**/dist-safari/
+**/test-results/
+coverage/
+.env
+.DS_Store
+*.xcuserstate
+xcuserdata/
+DerivedData/
+.swiftpm/

@@ -1,0 +1,83 @@
+name: LiveBilingualSubtitles
+options:
+  minimumXcodeGenVersion: 2.42.0
+  deploymentTarget:
+    macOS: "14.0"
+settings:
+  base:
+    SWIFT_VERSION: 6.0
+    MACOSX_DEPLOYMENT_TARGET: 14.0
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: ""
+targets:
+  LiveBilingualSubtitles:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/App
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.LiveBilingualSubtitles
+    info:
+      path: Config/App-Info.plist
+      properties:
+        CFBundleDisplayName: 实时双语字幕
+        LSUIElement: true
+        NSScreenCaptureUsageDescription: 用于读取您主动选择的 Safari 窗口的系统音频，以生成实时字幕。
+        SFSafariWebExtensionBundleIdentifier: com.example.LiveBilingualSubtitles.Extension
+    entitlements:
+      path: Config/App.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
+        com.apple.security.application-groups:
+          - group.com.example.LiveBilingualSubtitles
+    dependencies:
+      - target: LiveBilingualSubtitlesExtension
+        embed: true
+  LiveBilingualSubtitlesExtension:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: Sources/Extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.LiveBilingualSubtitles.Extension
+    info:
+      path: Config/Extension-Info.plist
+      properties:
+        CFBundleDisplayName: 实时双语字幕
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.Safari.web-extension
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).SafariWebExtensionHandler
+    entitlements:
+      path: Config/Extension.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.application-groups:
+          - group.com.example.LiveBilingualSubtitles
+    postBuildScripts:
+      - name: Copy Safari Web Extension Resources
+        basedOnDependencyAnalysis: false
+        script: |
+          set -eu
+          cd "$SRCROOT/../extension"
+          npm run build:safari
+          mkdir -p "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
+          ditto dist-safari/ "$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/"
+  LiveBilingualSubtitlesTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: LiveBilingualSubtitles
+schemes:
+  LiveBilingualSubtitles:
+    build:
+      targets:
+        LiveBilingualSubtitles: all
+        LiveBilingualSubtitlesExtension: all
+        LiveBilingualSubtitlesTests: [test]
+    run:
+      config: Debug

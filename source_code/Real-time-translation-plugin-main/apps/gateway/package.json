@@ -1,0 +1,25 @@
+{
+  "name": "@live-subtitles/gateway",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "dev": "tsx watch src/main.ts",
+    "start": "node dist/main.js"
+  },
+  "dependencies": {
+    "@live-subtitles/shared": "*",
+    "dotenv": "^17.2.3",
+    "microsoft-cognitiveservices-speech-sdk": "^1.46.0",
+    "ws": "^8.18.3",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.1",
+    "tsup": "^8.5.1",
+    "tsx": "^4.20.6"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "实时双语字幕",
+  "description": "为当前标签页的视频和音频实时生成双语字幕。",
+  "version": "0.1.0",
+  "minimum_chrome_version": "116",
+  "permissions": ["activeTab", "storage", "tabCapture", "offscreen", "scripting"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "action": {
+    "default_title": "实时双语字幕",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "commands": {
+    "toggle-subtitles": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "开始或停止实时字幕"
+    }
+  },
+  "content_scripts": [{
+    "matches": ["http://*/*", "https://*/*"],
+    "js": ["content.js"],
+    "run_at": "document_start",
+    "all_frames": false
+  }],
+  "web_accessible_resources": [{ "resources": ["pcm-worklet.js"], "matches": ["<all_urls>"] }],
+  "content_security_policy": { "extension_pages": "script-src 'self'; object-src 'self';" }
+}

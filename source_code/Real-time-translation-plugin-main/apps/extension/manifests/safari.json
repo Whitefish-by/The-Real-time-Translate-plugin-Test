@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "实时双语字幕",
+  "description": "为 Safari 视频实时生成双语字幕。",
+  "version": "0.1.0",
+  "permissions": ["activeTab", "storage", "nativeMessaging"],
+  "host_permissions": ["http://*/*", "https://*/*"],
+  "background": { "service_worker": "background.js", "type": "module" },
+  "action": {
+    "default_title": "实时双语字幕",
+    "default_popup": "popup.html"
+  },
+  "options_page": "options.html",
+  "content_scripts": [{
+    "matches": ["http://*/*", "https://*/*"],
+    "js": ["content.js"],
+    "run_at": "document_start",
+    "all_frames": false
+  }]
+}

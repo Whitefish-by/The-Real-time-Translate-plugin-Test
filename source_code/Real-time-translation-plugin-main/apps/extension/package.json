@@ -1,0 +1,23 @@
+{
+  "name": "@live-subtitles/extension",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "build:safari": "BROWSER_TARGET=safari vite build --outDir dist-safari",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@live-subtitles/shared": "*",
+    "webextension-polyfill": "^0.12.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/chrome": "^0.2.5",
+    "@types/webextension-polyfill": "^0.12.3",
+    "vite": "^7.2.2"
+  }
+}

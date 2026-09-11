@@ -1,0 +1,33 @@
+{
+  "name": "live-bilingual-subtitles",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "npm@11.16.0",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "overrides": {
+    "tsup": {
+      "esbuild": "^0.28.2"
+    }
+  },
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "dev:gateway": "npm run dev -w @live-subtitles/gateway",
+    "build:chrome": "npm run build -w @live-subtitles/extension",
+    "build:safari-resources": "npm run build:safari -w @live-subtitles/extension",
+    "verify": "npm run typecheck && npm test && npm run build && npm run build:safari-resources"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
