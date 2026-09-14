@@ -9,3 +9,9 @@ coverage/
 xcuserdata/
 DerivedData/
 .swiftpm/
+
+# Generated test reports and browser bundles
+tests/module1/results/
+tests/module1-lcy/results/
+tests/module1-lcy/reproduce-results/
+tests/module1-lcy/generated/

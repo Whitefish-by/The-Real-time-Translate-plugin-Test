@@ -32,6 +32,7 @@ export class RealtimeClient {
   }
 
   push(frame: AudioFrame): void {
+    if (this.manuallyClosed) return;
     let resetConnection = false;
     if (this.socket?.readyState === WebSocket.OPEN && this.ready && this.socket.bufferedAmount <= MAX_SOCKET_BUFFER_BYTES) {
       try {
@@ -47,7 +48,8 @@ export class RealtimeClient {
     this.buffer(frame);
     if (resetConnection && this.socket?.readyState === WebSocket.OPEN) {
       this.ready = false;
-      this.socket.close(1013, "send_backpressure");
+      // Browser WebSocket.close permits 1000 or application codes 3000-4999.
+      this.socket.close(4013, "send_backpressure");
     }
   }
 
@@ -76,6 +78,15 @@ export class RealtimeClient {
     this.callbacks.onState("closed", "会话已停止");
   }
 
+  private stopAfterFatalError(socket: WebSocket): void {
+    this.manuallyClosed = true;
+    this.ready = false;
+    this.pending = [];
+    if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+    this.reconnectTimer = null;
+    socket.close(4008, "fatal_server_error");
+  }
+
   private openSocket(): void {
     this.callbacks.onState(this.reconnectAttempt ? "reconnecting" : "connecting", this.reconnectAttempt ? "正在重连…" : "正在连接字幕网关…");
     const socket = new WebSocket(this.settings.gatewayUrl);
@@ -85,10 +96,11 @@ export class RealtimeClient {
       if (socket === this.socket && !this.manuallyClosed) socket.send(JSON.stringify(makeHello(this.settings, this.sessionId, this.generation)));
     });
     socket.addEventListener("message", (message) => {
-      if (socket !== this.socket) return;
+      if (socket !== this.socket || this.manuallyClosed) return;
       try {
         const parsed = serverMessageSchema.parse(JSON.parse(String(message.data)));
         if (parsed.sessionId && parsed.sessionId !== this.sessionId) {
+          this.stopAfterFatalError(socket);
           this.callbacks.onMessage({ type: "error", sessionId: this.sessionId, code: "session_mismatch", message: "网关返回了其他会话的消息", retryable: false });
           return;
         }
@@ -113,12 +125,10 @@ export class RealtimeClient {
           });
         }
         if (parsed.type === "error" && !parsed.retryable) {
-          this.manuallyClosed = true;
-          this.ready = false;
-          this.pending = [];
-          socket.close(1008, "fatal_server_error");
+          this.stopAfterFatalError(socket);
         }
       } catch {
+        this.stopAfterFatalError(socket);
         this.callbacks.onMessage({ type: "error", sessionId: this.sessionId, code: "invalid_server_message", message: "网关返回了无效消息", retryable: false });
       }
     });
