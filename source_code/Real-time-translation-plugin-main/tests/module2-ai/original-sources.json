@@ -1,0 +1,15 @@
+{
+  "description": "模块二两项缺陷修复前的精确代码片段。reproduce.mjs 仅在系统临时目录中的源码副本执行反向替换，不修改当前工作区。",
+  "replacements": [
+    {
+      "path": "apps/extension/src/content.ts",
+      "fixed": "let dragStartY = 0;\nlet dragStartOffset = 0;\nlet activeDragPointerId: number | null = null;\n\nfunction finishDrag(pointerId: number, persist: boolean): void {\n  if (activeDragPointerId !== pointerId) return;\n  activeDragPointerId = null;\n  panel.classList.remove(\"dragging\");\n  if (panel.hasPointerCapture(pointerId)) panel.releasePointerCapture(pointerId);\n  if (persist && settings) {\n    void chrome.runtime.sendMessage({ type: \"settings:set\", settings } satisfies ExtensionMessage);\n  }\n}\n\npanel.addEventListener(\"pointerdown\", (event) => {\n  if (!settings) return;\n  dragStartY = event.clientY;\n  dragStartOffset = settings.verticalOffset;\n  activeDragPointerId = event.pointerId;\n  panel.classList.add(\"dragging\");\n  panel.setPointerCapture(event.pointerId);\n});\npanel.addEventListener(\"pointermove\", (event) => {\n  if (!settings || activeDragPointerId !== event.pointerId || !panel.hasPointerCapture(event.pointerId)) return;\n  const clampedOffset = Math.max(0, Math.min(500, dragStartOffset + dragStartY - event.clientY));\n  settings = { ...settings, verticalOffset: Math.round(clampedOffset) };\n  render();\n});\npanel.addEventListener(\"pointerup\", (event) => {\n  finishDrag(event.pointerId, true);\n});\npanel.addEventListener(\"pointercancel\", (event) => finishDrag(event.pointerId, false));\npanel.addEventListener(\"lostpointercapture\", (event) => finishDrag(event.pointerId, false));",
+      "original": "let dragStartY = 0;\nlet dragStartOffset = 0;\npanel.addEventListener(\"pointerdown\", (event) => {\n  if (!settings) return;\n  dragStartY = event.clientY;\n  dragStartOffset = settings.verticalOffset;\n  panel.classList.add(\"dragging\");\n  panel.setPointerCapture(event.pointerId);\n});\npanel.addEventListener(\"pointermove\", (event) => {\n  if (!settings || !panel.hasPointerCapture(event.pointerId)) return;\n  settings = { ...settings, verticalOffset: Math.max(0, Math.min(500, dragStartOffset + dragStartY - event.clientY)) };\n  render();\n});\npanel.addEventListener(\"pointerup\", (event) => {\n  if (!settings) return;\n  panel.classList.remove(\"dragging\");\n  panel.releasePointerCapture(event.pointerId);\n  void chrome.runtime.sendMessage({ type: \"settings:set\", settings } satisfies ExtensionMessage);\n});"
+    },
+    {
+      "path": "apps/gateway/src/providers/gummy.ts",
+      "fixed": "      case \"result-generated\":\n        try {\n          this.handleResult(event);\n        } catch {\n          this.failActive(\n            \"gummy_result_processing_failed\",\n            \"Gummy 返回了无法处理的识别结果\",\n            true,\n          );\n        }\n        break;",
+      "original": "      case \"result-generated\":\n        this.handleResult(event);\n        break;"
+    }
+  ]
+}

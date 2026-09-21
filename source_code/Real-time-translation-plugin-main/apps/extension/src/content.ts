@@ -157,24 +157,37 @@ chrome.runtime.onMessage.addListener((message: ExtensionMessage) => {
 document.addEventListener("fullscreenchange", attach);
 let dragStartY = 0;
 let dragStartOffset = 0;
+let activeDragPointerId: number | null = null;
+
+function finishDrag(pointerId: number, persist: boolean): void {
+  if (activeDragPointerId !== pointerId) return;
+  activeDragPointerId = null;
+  panel.classList.remove("dragging");
+  if (panel.hasPointerCapture(pointerId)) panel.releasePointerCapture(pointerId);
+  if (persist && settings) {
+    void chrome.runtime.sendMessage({ type: "settings:set", settings } satisfies ExtensionMessage);
+  }
+}
+
 panel.addEventListener("pointerdown", (event) => {
   if (!settings) return;
   dragStartY = event.clientY;
   dragStartOffset = settings.verticalOffset;
+  activeDragPointerId = event.pointerId;
   panel.classList.add("dragging");
   panel.setPointerCapture(event.pointerId);
 });
 panel.addEventListener("pointermove", (event) => {
-  if (!settings || !panel.hasPointerCapture(event.pointerId)) return;
-  settings = { ...settings, verticalOffset: Math.max(0, Math.min(500, dragStartOffset + dragStartY - event.clientY)) };
+  if (!settings || activeDragPointerId !== event.pointerId || !panel.hasPointerCapture(event.pointerId)) return;
+  const clampedOffset = Math.max(0, Math.min(500, dragStartOffset + dragStartY - event.clientY));
+  settings = { ...settings, verticalOffset: Math.round(clampedOffset) };
   render();
 });
 panel.addEventListener("pointerup", (event) => {
-  if (!settings) return;
-  panel.classList.remove("dragging");
-  panel.releasePointerCapture(event.pointerId);
-  void chrome.runtime.sendMessage({ type: "settings:set", settings } satisfies ExtensionMessage);
+  finishDrag(event.pointerId, true);
 });
+panel.addEventListener("pointercancel", (event) => finishDrag(event.pointerId, false));
+panel.addEventListener("lostpointercapture", (event) => finishDrag(event.pointerId, false));
 
 if (document.documentElement) attach();
 else document.addEventListener("DOMContentLoaded", attach, { once: true });

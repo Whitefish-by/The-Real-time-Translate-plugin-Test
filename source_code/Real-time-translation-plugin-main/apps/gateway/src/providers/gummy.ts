@@ -238,7 +238,15 @@ class GummySession implements SpeechProviderSession {
         this.handleTaskStarted();
         break;
       case "result-generated":
-        this.handleResult(event);
+        try {
+          this.handleResult(event);
+        } catch {
+          this.failActive(
+            "gummy_result_processing_failed",
+            "Gummy 返回了无法处理的识别结果",
+            true,
+          );
+        }
         break;
       case "task-finished":
         this.handleTaskFinished();
