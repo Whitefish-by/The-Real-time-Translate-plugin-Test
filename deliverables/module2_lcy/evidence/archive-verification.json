@@ -1,0 +1,9 @@
+{
+  "verifiedAt": "2026-09-23T02:38:52.175Z",
+  "fixedPassed": 24,
+  "baselinePassed": 20,
+  "baselineFailed": 4,
+  "gitMetadataRequired": false,
+  "sourceSha256": "7531d77b66eae6214f2f378702299d255a63897b30a9eea11a0e740d6139dcb3",
+  "dependencySetup": "Existing installed node_modules reused; fresh npm ci was not rerun."
+}

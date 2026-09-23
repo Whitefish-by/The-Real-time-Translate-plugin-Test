@@ -4,8 +4,6 @@ import {
   AudioStreamFormat,
   AutoDetectSourceLanguageConfig,
   AutoDetectSourceLanguageResult,
-  CancellationErrorCode,
-  CancellationReason,
   PropertyId,
   ResultReason,
   SpeechTranslationConfig,
@@ -42,21 +40,14 @@ class AzureSession implements SpeechProviderSession {
     this.recognizer.recognizing = (_sender, event) => this.handleResult(event, false);
     this.recognizer.recognized = (_sender, event) => this.handleResult(event, true);
     this.recognizer.canceled = (_sender, event) => {
-      if (this.stopped || event.reason !== CancellationReason.Error) return;
-      const retryable = ![
-        CancellationErrorCode.AuthenticationFailure,
-        CancellationErrorCode.BadRequestParameters,
-        CancellationErrorCode.Forbidden,
-      ].includes(event.errorCode);
       this.emit({
         type: "provider-error",
         code: `azure_${event.reason}`,
         message: event.errorDetails || "Azure 语音识别已取消",
-        retryable,
+        retryable: true,
       });
     };
     this.recognizer.sessionStopped = () => {
-      if (this.stopped) return;
       this.emit({ type: "provider-status", code: "stopped", message: "Azure 识别会话已停止" });
     };
   }
@@ -99,7 +90,6 @@ class AzureSession implements SpeechProviderSession {
   }
 
   private handleResult(event: TranslationRecognitionEventArgs, isFinal: boolean): void {
-    if (this.stopped) return;
     const result = event.result;
     if (result.reason !== ResultReason.TranslatingSpeech && result.reason !== ResultReason.TranslatedSpeech) return;
     if (!result.text) return;

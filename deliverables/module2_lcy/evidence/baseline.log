@@ -1,0 +1,134 @@
+
+ RUN  v3.2.7 /private/var/folders/3s/_k_fg0xn53d82b43qcrq10kr0000gn/T/module2-lcy-reproduce-EXkkI0
+
+ ❯ tests/module2-lcy/azure.test.ts (24 tests | 4 failed) 9ms
+   ✓ M2-LCY-001 自定义端点传给SDK 1ms
+   ✓ M2-LCY-002 无端点时使用订阅区域 0ms
+   ✓ M2-LCY-003 源语言和目标语言传递正确 0ms
+   ✓ M2-LCY-004 PCM格式固定为16kHz16位单声道 0ms
+   ✓ M2-LCY-005 启动成功兑现Promise 0ms
+   ✓ M2-LCY-006 启动失败保留错误说明 0ms
+   ✓ M2-LCY-007 PCM子数组只复制有效字节 0ms
+   ✓ M2-LCY-008 abort后不再写入音频 0ms
+   ✓ M2-LCY-009 end后不再写入音频 0ms
+   ✓ M2-LCY-010 首帧不足40毫秒时起点钳制到零 0ms
+   ✓ M2-LCY-011 SDK时间刻度在半毫秒处取整 0ms
+   ✓ M2-LCY-012 NoMatch结果不输出字幕 0ms
+   ✓ M2-LCY-013 空原文不输出字幕 0ms
+   ✓ M2-LCY-014 语言识别为空时回退首个源语言 0ms
+   ✓ M2-LCY-015 缺少目标译文时输出null 0ms
+   ✓ M2-LCY-016 同片段临时与最终结果修订号递增 0ms
+   ✓ M2-LCY-017 正常结束只关闭一次资源 0ms
+   ✓ M2-LCY-018 停止SDK失败仍释放资源 0ms
+   ✓ M2-LCY-019 abort重复调用保持幂等 0ms
+   × M2-LCY-020 abort后迟到回调不再发出事件 2ms
+     → expected [ { type: 'subtitle', …(10) }, …(3) ] to have a length of +0 but got 4
+   × M2-LCY-021 认证失败不可重试 1ms
+     → expected [ { type: 'provider-error', …(3) } ] to deeply equal [ ObjectContaining{…} ]
+   × M2-LCY-022 参数错误不可重试 0ms
+     → expected [ { type: 'provider-error', …(3) } ] to deeply equal [ ObjectContaining{…} ]
+   ✓ M2-LCY-023 服务超时保留重试能力 0ms
+   × M2-LCY-024 正常流结束不报告服务错误 0ms
+     → expected [ { type: 'provider-error', …(3) } ] to have a length of +0 but got 1
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 20 passed (24)
+   Start at  15:10:15
+   Duration  171ms (transform 30ms, setup 0ms, collect 78ms, tests 9ms, environment 0ms, prepare 24ms)
+
+JSON report written to /Users/satomafuyu/Documents/2026软件测试/The-Real-time-Translate-plugin-Test/source_code/Real-time-translation-plugin-main/tests/module2-lcy/results/baseline-unit.json
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/module2-lcy/azure.test.ts > M2-LCY-020 abort后迟到回调不再发出事件
+AssertionError: expected [ { type: 'subtitle', …(10) }, …(3) ] to have a length of +0 but got 4
+
+- Expected
++ Received
+
+- 0
++ 4
+
+ ❯ tests/module2-lcy/azure.test.ts:130:18
+    128|   const { session, events } = setup(); session.abort(); result(); resu…
+    129|   cancel(sdk.CancellationErrorCode.ConnectionFailure); h.recognizer.se…
+    130|   expect(events).toHaveLength(0);
+       |                  ^
+    131| });
+    132| it('M2-LCY-021 认证失败不可重试', () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/module2-lcy/azure.test.ts > M2-LCY-021 认证失败不可重试
+AssertionError: expected [ { type: 'provider-error', …(3) } ] to deeply equal [ ObjectContaining{…} ]
+
+- Expected
++ Received
+
+  [
+-   ObjectContaining {
++   {
++     "code": "azure_0",
+      "message": "test cancellation",
+-     "retryable": false,
++     "retryable": true,
+      "type": "provider-error",
+    },
+  ]
+
+ ❯ tests/module2-lcy/azure.test.ts:134:18
+    132| it('M2-LCY-021 认证失败不可重试', () => {
+    133|   const { events } = setup(); cancel(sdk.CancellationErrorCode.Authent…
+    134|   expect(events).toEqual([expect.objectContaining({ type: 'provider-er…
+       |                  ^
+    135| });
+    136| it('M2-LCY-022 参数错误不可重试', () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/module2-lcy/azure.test.ts > M2-LCY-022 参数错误不可重试
+AssertionError: expected [ { type: 'provider-error', …(3) } ] to deeply equal [ ObjectContaining{…} ]
+
+- Expected
++ Received
+
+  [
+-   ObjectContaining {
+-     "retryable": false,
++   {
++     "code": "azure_0",
++     "message": "test cancellation",
++     "retryable": true,
+      "type": "provider-error",
+    },
+  ]
+
+ ❯ tests/module2-lcy/azure.test.ts:138:18
+    136| it('M2-LCY-022 参数错误不可重试', () => {
+    137|   const { events } = setup(); cancel(sdk.CancellationErrorCode.BadRequ…
+    138|   expect(events).toEqual([expect.objectContaining({ type: 'provider-er…
+       |                  ^
+    139| });
+    140| it('M2-LCY-023 服务超时保留重试能力', () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/module2-lcy/azure.test.ts > M2-LCY-024 正常流结束不报告服务错误
+AssertionError: expected [ { type: 'provider-error', …(3) } ] to have a length of +0 but got 1
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ tests/module2-lcy/azure.test.ts:146:59
+    144| it('M2-LCY-024 正常流结束不报告服务错误', () => {
+    145|   const { events } = setup(); cancel(sdk.CancellationErrorCode.NoError…
+    146|   expect(events.filter(e => e.type === 'provider-error')).toHaveLength…
+       |                                                           ^
+    147| });
+    148| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+

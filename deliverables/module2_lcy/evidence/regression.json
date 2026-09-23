@@ -1,0 +1,34 @@
+[
+  {
+    "name": "packages/shared-types",
+    "status": 0
+  },
+  {
+    "name": "apps/gateway-types",
+    "status": 0
+  },
+  {
+    "name": "apps/extension-types",
+    "status": 0
+  },
+  {
+    "name": "lcy-types",
+    "status": 0
+  },
+  {
+    "name": "product",
+    "status": 0
+  },
+  {
+    "name": "module1",
+    "status": 0
+  },
+  {
+    "name": "module1-lcy",
+    "status": 0
+  },
+  {
+    "name": "module2-ai",
+    "status": 0
+  }
+]

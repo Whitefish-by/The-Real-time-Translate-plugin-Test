@@ -1,0 +1,11 @@
+
+ RUN  v3.2.7 /Users/satomafuyu/Documents/2026软件测试/The-Real-time-Translate-plugin-Test/source_code/Real-time-translation-plugin-main
+
+ ✓ tests/module2-lcy/azure.test.ts (24 tests) 5ms
+
+ Test Files  1 passed (1)
+      Tests  24 passed (24)
+   Start at  15:10:14
+   Duration  231ms (transform 39ms, setup 0ms, collect 129ms, tests 5ms, environment 0ms, prepare 32ms)
+
+JSON report written to /Users/satomafuyu/Documents/2026软件测试/The-Real-time-Translate-plugin-Test/source_code/Real-time-translation-plugin-main/tests/module2-lcy/results/unit.json

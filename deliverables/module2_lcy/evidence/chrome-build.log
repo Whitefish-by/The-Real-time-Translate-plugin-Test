@@ -1,0 +1,13 @@
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 93 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/pcm-worklet.js                1.40 kB │ gzip:  0.66 kB │ map:   5.01 kB
+dist/popup.js                      3.21 kB │ gzip:  1.62 kB │ map:   6.11 kB
+dist/content.js                    5.04 kB │ gzip:  2.10 kB │ map:  14.25 kB
+dist/options.js                    5.40 kB │ gzip:  2.45 kB │ map:   9.92 kB
+dist/offscreen.js                  6.07 kB │ gzip:  2.49 kB │ map:  18.26 kB
+dist/background.js                 6.25 kB │ gzip:  2.44 kB │ map:  20.91 kB
+dist/chunks/protocol-Tn4XGBHn.js  72.00 kB │ gzip: 19.62 kB │ map: 403.62 kB
+✓ built in 187ms

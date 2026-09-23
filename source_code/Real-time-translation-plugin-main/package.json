@@ -36,7 +36,11 @@
     "test:module2": "node tests/module2-ai/run.mjs",
     "test:module2:reproduce": "node tests/module2-ai/reproduce.mjs",
     "typecheck:module2": "tsc -p tests/module2-ai/tsconfig.json --noEmit",
-    "test:regression:module2": "npm run typecheck && npm run typecheck:module2 && npm test && npm run test:module2 && npm run build && npm run build:safari-resources && npm run test:e2e -w @live-subtitles/extension"
+    "test:regression:module2": "npm run typecheck && npm run typecheck:module2 && npm test && npm run test:module2 && npm run build && npm run build:safari-resources && npm run test:e2e -w @live-subtitles/extension",
+    "test:module2:lcy": "node tests/module2-lcy/run.mjs",
+    "test:module2:lcy:reproduce": "node tests/module2-lcy/reproduce.mjs",
+    "typecheck:module2:lcy": "tsc -p tests/module2-lcy/tsconfig.json --noEmit",
+    "test:regression:module2:lcy": "node tests/module2-lcy/run.mjs && node tests/module2-lcy/regression.mjs"
   },
   "devDependencies": {
     "@types/node": "^24.10.0",

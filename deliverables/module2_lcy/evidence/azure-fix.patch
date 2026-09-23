@@ -1,0 +1,44 @@
+diff --git a/source_code/Real-time-translation-plugin-main/apps/gateway/src/providers/azure.ts b/source_code/Real-time-translation-plugin-main/apps/gateway/src/providers/azure.ts
+index a186363..b56ca59 100644
+--- a/source_code/Real-time-translation-plugin-main/apps/gateway/src/providers/azure.ts
++++ b/source_code/Real-time-translation-plugin-main/apps/gateway/src/providers/azure.ts
+@@ -4,6 +4,8 @@ import {
+   AudioStreamFormat,
+   AutoDetectSourceLanguageConfig,
+   AutoDetectSourceLanguageResult,
++  CancellationErrorCode,
++  CancellationReason,
+   PropertyId,
+   ResultReason,
+   SpeechTranslationConfig,
+@@ -40,14 +42,21 @@ class AzureSession implements SpeechProviderSession {
+     this.recognizer.recognizing = (_sender, event) => this.handleResult(event, false);
+     this.recognizer.recognized = (_sender, event) => this.handleResult(event, true);
+     this.recognizer.canceled = (_sender, event) => {
++      if (this.stopped || event.reason !== CancellationReason.Error) return;
++      const retryable = ![
++        CancellationErrorCode.AuthenticationFailure,
++        CancellationErrorCode.BadRequestParameters,
++        CancellationErrorCode.Forbidden,
++      ].includes(event.errorCode);
+       this.emit({
+         type: "provider-error",
+         code: `azure_${event.reason}`,
+         message: event.errorDetails || "Azure 语音识别已取消",
+-        retryable: true,
++        retryable,
+       });
+     };
+     this.recognizer.sessionStopped = () => {
++      if (this.stopped) return;
+       this.emit({ type: "provider-status", code: "stopped", message: "Azure 识别会话已停止" });
+     };
+   }
+@@ -90,6 +99,7 @@ class AzureSession implements SpeechProviderSession {
+   }
+ 
+   private handleResult(event: TranslationRecognitionEventArgs, isFinal: boolean): void {
++    if (this.stopped) return;
+     const result = event.result;
+     if (result.reason !== ResultReason.TranslatingSpeech && result.reason !== ResultReason.TranslatedSpeech) return;
+     if (!result.text) return;
